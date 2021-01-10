@@ -30,18 +30,27 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems, function (err) {
-  if (err) {
-    console.log(err)
-  } else
-    console.log("pushed to DB")
-});
+
 
 app.get("/", function (req, res) {
   Item.find({}, function (err, foundItems) {
 
-    res.render("list", { listTitle: "Today", newListItems: foundItems });
-    console.log()
+    if (foundItems.length === 0) {
+      Item.insertMany(defaultItems, function (err) {
+        if (err) {
+          console.log(err)
+        } else
+          console.log("pushed to DB")
+      });
+      res.redirect("/")
+
+    } else {
+      res.render("list", { listTitle: "Today", newListItems: foundItems });
+      console.log()
+
+    }
+
+
   });
 
 
