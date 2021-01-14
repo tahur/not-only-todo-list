@@ -10,6 +10,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 mongoose.connect("mongodb://localhost:27017/todolistDB", { useNewUrlParser: true })
+mongoose.set('useFindAndModify', false)
 
 
 
@@ -121,14 +122,31 @@ app.post("/", function (req, res) {
 
 app.post("/delete", function (req, res) {
   const checkedItemId = req.body.checkbox;
-  Item.findByIdAndRemove(checkedItemId, function (err) {
-    if (err) {
-      console.log(err)
-    } else {
-      res.redirect("/");
-      console.log("Deleted")
-    }
-  })
+  const listName = req.body.listName;
+
+  if (listName == "Today") {
+    Item.findByIdAndRemove(checkedItemId, function (err) {
+      if (err) {
+        console.log(err)
+      } else {
+        res.redirect("/");
+        console.log("Deleted")
+      }
+    })
+
+  } else {
+
+    List.findOneAndUpdate({ name: listName }, { $pull: { item: { _id: checkedItemId } } }, function (err, foundList) {
+      if (!err) {
+        res.redirect("/" + listName)
+      } else {
+        console.log("err")
+      }
+    })
+
+  }
+
+
 
 })
 
