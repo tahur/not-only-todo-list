@@ -4,6 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose")
 const app = express();
+const _ = require("lodash");
+
 
 
 app.set('view engine', 'ejs');
@@ -66,8 +68,8 @@ const List = mongoose.model("List", listSchema);
 
 
 app.get("/:customListName", function (req, res) {
+  const customListName = _.capitalize(req.params.customListName);
 
-  const customListName = req.params.customListName;
 
   List.findOne({ name: customListName }, function (err, foundList) {
     if (!err) {
@@ -136,13 +138,19 @@ app.post("/delete", function (req, res) {
 
   } else {
 
-    List.findOneAndUpdate({ name: listName }, { $pull: { item: { _id: checkedItemId } } }, function (err, foundList) {
+    List.findOneAndUpdate({ name: listName }, { $pull: { items: { _id: checkedItemId } } }, function (err, foundList) {
       if (!err) {
         res.redirect("/" + listName)
       } else {
         console.log("err")
       }
     })
+
+    // List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemId}}}, function(err, foundList){
+    //   if (!err){
+    //     res.redirect("/" + listName);
+    //   }
+    // });
 
   }
 
