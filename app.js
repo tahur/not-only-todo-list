@@ -1,5 +1,5 @@
 //jshint esversion:6
-
+const cid =  require(__dirname + "/idpass.js")//importing credentials for mongo db
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose")
@@ -8,10 +8,11 @@ const _ = require("lodash");
 
 
 
+
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-mongoose.connect("mongodb://localhost:27017/todolistDB", { useNewUrlParser: true })
+mongoose.connect(`mongodb+srv://${cid.userID}:${cid.passwordMongo}@sandbox.2ij7l.mongodb.net/todolistDB`, { useNewUrlParser: true })
 mongoose.set('useFindAndModify', false)
 
 
